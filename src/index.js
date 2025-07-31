@@ -68,7 +68,7 @@ server.get("/frases", async (req, res) => {
     try {
         const connection = await getConnection();
 
-        const [results] = await connection.query ("SELECT frases.id, frases.texto AS frase, personajes.nombre, personajes.apellido, personajes.ocupacion, personajes.descripcion, capitulos.titulo AS capitulo FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id ORDER BY personajes.nombre ASC;");
+        const [results] = await connection.query ("SELECT frases.id AS id_frase, frases.texto AS frase, personajes.nombre, personajes.apellido, personajes.ocupacion, personajes.descripcion, capitulos.titulo AS capitulo FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id ORDER BY personajes.nombre ASC;");
     
         connection.end();
 
@@ -86,7 +86,7 @@ server.get("/frases/:id", async (req, res) => {
 
         const id = req.params.id;
 
-        const [results] = await connection.query ("SELECT frases.texto AS frase, personajes.nombre, personajes.apellido FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id WHERE frases.id = ?;", [id]);
+        const [results] = await connection.query ("SELECT frases.id AS id_frase, frases.texto AS frase, personajes.nombre, personajes.apellido FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id WHERE frases.id = ?;", [id]);
     
         connection.end();
 
@@ -174,6 +174,132 @@ server.delete("/frases/:id", async (req, res) => {
             mensaje: "✅La frase se ha eliminado correctamente",
             }) 
         }
+    }
+    catch(error) {
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+//obtener todas las frases de un personaje especifico
+server.get("/frases/personaje/:personaje_id", async (req, res) => {
+    try {
+        const connection = await getConnection();
+
+        const id = req.params.personaje_id;
+
+        const [results] = await connection.query ("SELECT personajes.id AS id_personaje, personajes.nombre, personajes.apellido, frases.texto AS frase FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id WHERE personajes.id = ?;", [id]);
+    
+        connection.end();
+
+        //para que el nombre del personaje salga una sola vez y debajo todas sus frases una debajo de otra
+        const { id_personaje, nombre, apellido } = results[0];//evita que salga 2 veces la info de Lisa, coge los datos solo 1 vez
+        const frases = results.map(item => item.frase);//de los resultados se queda solo con las frases
+
+        if(isNaN(id)){
+            res.status(400).json({
+            success: false, 
+            mensaje: "⚠️El ID no es válido. Debe ser un número",
+            })
+        }
+        else if(results.length === 0) {
+        res.status(404).json({
+            success: false, 
+            mensaje: "⚠️El ID no coincide con ningún personaje"})
+        }
+        else{
+            res.status(200).json({"results": 
+                {
+                    id_personaje,
+                    nombre,
+                    apellido,
+                    frases
+            }
+        })
+        }
+    }
+    catch(error) {
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+//obtener todas las frases de un capitulo especifico
+server.get("/frases/capitulo/:capitulo_id", async (req, res) => {
+    try {
+        const connection = await getConnection();
+
+        const id = req.params.capitulo_id;
+
+        const [results] = await connection.query ("SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, frases.texto AS frase FROM frases INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id WHERE capitulos.id = ?;", [id]);
+    
+        connection.end();
+
+        //para que el nombre del personaje salga una sola vez y debajo todas sus frases una debajo de otra
+        const { id_capitulo, titulo_capitulo } = results[0];//evita que salga 2 veces la info de Lisa, coge los datos solo 1 vez
+        const frases = results.map(item => item.frase);//de los resultados se queda solo con las frases
+
+        if(isNaN(id)){
+            res.status(400).json({
+            success: false, 
+            mensaje: "⚠️El ID no es válido. Debe ser un número",
+            })
+        }
+        else if(results.length === 0) {
+        res.status(404).json({
+            success: false, 
+            mensaje: "⚠️El ID no coincide con ningún capítulo"})
+        }
+        else{
+            res.status(200).json({"results": 
+                {
+                    id_capitulo,
+                    titulo_capitulo,
+                    frases
+            }
+        })
+        }
+    }
+    catch(error) {
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+
+
+//listar todos los personajes
+server.get("/personajes", async (req, res) => {
+
+    try {
+        const connection = await getConnection();
+
+        const [results] = await connection.query ("SELECT * FROM personajes ORDER BY personajes.nombre ASC;");
+    
+        connection.end();
+
+        res.status(200).json({"results": results})    
+    }
+    catch(error) {
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+
+//listar todos los capitulos
+server.get("/capitulos", async (req, res) => {
+
+    try {
+        const connection = await getConnection();
+
+        const [results] = await connection.query ("SELECT capitulos.id, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision FROM capitulos ORDER BY capitulos.temporada ASC, capitulos.numero_episodio ASC;");
+    
+        connection.end();
+
+        //modificar fecha de formato json a iso
+        const capitulosFechaModificada = results.map(capitulo => {
+            const nuevaFecha = new Date(capitulo.fecha_emision).toISOString().split('T')[0];
+            return {...capitulo, fecha_emision: nuevaFecha};
+        })
+        
+        res.status(200).json({"results": capitulosFechaModificada})    
     }
     catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
