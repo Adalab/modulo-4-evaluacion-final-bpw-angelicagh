@@ -21,7 +21,7 @@
   position: relative;
 }
 
-//Efecto de “pegado” en el borde superior
+//efecto posit
 .frase-personaje-container::before {
 content: '';
   position: absolute;
@@ -30,7 +30,7 @@ content: '';
   transform: translateX(-50%) rotate(-2deg);
   width: 80px; 
   height: 25px; 
-  background: rgb(4, 202, 176); /* cinta transparente */
+  background: rgb(4, 202, 176); 
   border-radius: 2px;
 
 }

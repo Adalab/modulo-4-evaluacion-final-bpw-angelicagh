@@ -408,8 +408,8 @@ server.post("/login", async (req, res) => {
 })
 
 //AUTORIZACION
-//una vez loggeado (middleware)
-server.get("/login", authenticateToken, async (req, res) => {
+//una vez loggeado (middleware) -------- REVISAR -----------
+server.get("/frases", authenticateToken, async (req, res) => {
 
     try {
         const connection = await getConnection();
