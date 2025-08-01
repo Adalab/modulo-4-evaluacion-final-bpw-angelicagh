@@ -458,7 +458,7 @@ server.get("/login", authenticateToken, async (req, res) => {
 
 
 //SERVIDOR DE ESTATICOS
-const staticServerPath = "./src/front"; //ruta donde esta mi proyecto
+const staticServerPath = "./src/web"; //ruta donde esta mi proyecto
 server.use(express.static(staticServerPath));
 
 
