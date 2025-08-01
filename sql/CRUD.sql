@@ -40,11 +40,11 @@ INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id
 WHERE capitulos.id = 5;
 
 -- listar todos los capitulos
-SELECT capitulos.id, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision 
+SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision 
 FROM capitulos
 ORDER BY capitulos.temporada ASC, capitulos.numero_episodio ASC;
 
 -- listar todos los personajes
-SELECT *
+SELECT personajes.id AS id_personaje, personajes.nombre, personajes.apellido, personajes.ocupacion, personajes.descripcion
 FROM personajes
 ORDER BY personajes.nombre ASC;

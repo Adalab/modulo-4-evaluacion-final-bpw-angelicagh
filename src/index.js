@@ -28,6 +28,27 @@ const getConnection = async () => {
     return connection;
 }
 
+//FUNCIONES TOKEN 
+//generar token (login)
+const generateToken = (payload) => {
+    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: "15m"}) //crea token con la clave secreta
+    return token;
+}
+
+//verificar token (middleware)
+const authenticateToken = (req, res, next) => {
+    const tokenHeader = req.headers['authorization'];
+
+    if(!tokenHeader) {
+        res.status(400).json({error: "Token no proporcionado"})
+    }
+
+    const verificarToken = jwt.verify(tokenHeader, process.env.JWT_SECRET_KEY); // verifica token con la clave secreta
+    if(!verificarToken){
+        res.status(400).json({error: "Token no válido"})
+    }
+    next(); //si todo ha ido bien, entra en server.get/frases y devuelve el listado de frases
+}
 
 //ENDPOINTS
 
@@ -263,15 +284,13 @@ server.get("/frases/capitulo/:capitulo_id", async (req, res) => {
     }
 })
 
-
-
 //listar todos los personajes
 server.get("/personajes", async (req, res) => {
 
     try {
         const connection = await getConnection();
 
-        const [results] = await connection.query ("SELECT * FROM personajes ORDER BY personajes.nombre ASC;");
+        const [results] = await connection.query ("SELECT personajes.id AS id_personaje, personajes.nombre, personajes.apellido, personajes.ocupacion, personajes.descripcion FROM personajes ORDER BY personajes.nombre ASC;");
     
         connection.end();
 
@@ -282,14 +301,13 @@ server.get("/personajes", async (req, res) => {
     }
 })
 
-
 //listar todos los capitulos
 server.get("/capitulos", async (req, res) => {
 
     try {
         const connection = await getConnection();
 
-        const [results] = await connection.query ("SELECT capitulos.id, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision FROM capitulos ORDER BY capitulos.temporada ASC, capitulos.numero_episodio ASC;");
+        const [results] = await connection.query ("SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision FROM capitulos ORDER BY capitulos.temporada ASC, capitulos.numero_episodio ASC;");
     
         connection.end();
 
@@ -306,6 +324,142 @@ server.get("/capitulos", async (req, res) => {
     }
 })
 
+//AUTENTICACION
+//register
+server.post("/register", async (req, res) => {
+
+    try {
+        const connection = await getConnection();
+
+        const {nombre, email, password} = req.body;
+
+        if(!email || !nombre || !password){
+            return res.status(400).json({
+            success: false, mensaje: "⚠️Faltan campos obligatorios",
+            })
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);//encriptar contraseña
+
+        let queryRegister = "INSERT INTO users (nombre, email, password) VALUES (?, ?, ?);"
+
+        const [results] = await connection.query(queryRegister, [nombre, email, passwordHash]);
+
+        connection.end();
+
+        res.status(200).json({
+            success: true,
+            mensaje: "✅El usuario se ha registrado correctamente",
+            id: results.insertId
+        })
+    }       
+    catch(error) {
+        console.error("🛑 Error en el servidor:", error);
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+//login 
+server.post("/login", async (req, res) => {
+
+    try {
+        const connection = await getConnection();
+
+        const {email, password} = req.body;
+
+        if(!email || !password){
+            return res.status(400).json({
+            success: false, mensaje: "⚠️Faltan campos obligatorios",
+            })
+        }
+
+        let queryLogin = "SELECT * FROM users WHERE email = ?;"//verificar que usuario existe
+
+        const [results] = await connection.query(queryLogin, [email]);//devuelve toda la info del usuario al que pertenece ese email
+
+        connection.end();
+
+        //verificar si la contraseña coincide con el email en la BD
+        const emailBD = results[0];
+
+        if(!emailBD){
+            return res.status(404).json({error: "⚠️El email no existe"});
+        }
+
+        const passwordCorrect = await bcrypt.compare(password, emailBD.password);//compara la contraseña que ha introducido el usuario al hacer login con la contraseña que existe en la BD
+
+        if(!passwordCorrect) {
+            return res.status(401).json({error: "⚠️Password incorrecto"})
+        }
+
+        //crear token
+        const userToken = { //estos son los datos que le voy a pasra a la funcion para generar el token
+            username: emailBD.email, //accedo a la propiedad email de la BD
+            id: emailBD.id //accedo a la propiedad id de la BD
+        }
+
+        const token = generateToken(userToken);     
+
+        res.status(200).json({token, email: emailBD.email})
+    }       
+    catch(error) { 
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+//AUTORIZACION
+//una vez loggeado (middleware)
+server.get("/login", authenticateToken, async (req, res) => {
+
+    try {
+        const connection = await getConnection();
+
+        const {email, password} = req.body;
+
+        if(!email || !password){
+            return res.status(400).json({
+            success: false, mensaje: "⚠️Faltan campos obligatorios",
+            })
+        }
+
+        let queryLogin = "SELECT * FROM users WHERE email = ?;"//verificar que usuario existe
+
+        const [results] = await connection.query(queryLogin, [email]);
+
+        connection.end();
+
+        //verificar si la contraseña coincide con el email en la BD
+        const emailBD = results[0];
+
+        const passwordCorrect = emailBD === null ? false : await
+
+        bcrypt.compare(password, emailBD.password);
+
+        if(!passwordCorrect) {
+            return res.status(401).json({error: "⚠️Email y/o password incorrectos"})
+        }
+
+        //crear token
+        const userToken = {
+            username: emailBD.email,
+            id: emailBD.id
+        }
+
+        const token = generateToken(userToken);     
+
+        res.status(200).json({token, email: emailBD.email})
+    }       
+    catch(error) { 
+        res.status(500).json({error: "❌ Error interno del servidor"})
+    }
+})
+
+
+
+
+//SERVIDOR DE ESTATICOS
+const staticServerPath = "./src/front"; //ruta donde esta mi proyecto
+server.use(express.static(staticServerPath));
 
 
 
