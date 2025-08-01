@@ -50,23 +50,7 @@ Relaciones establecidas entre frases, personajes y capítulos.
 | GET | `/frases/capitulo/:capitulo_id` | Frases por capítulo |
 | GET | `/personajes` | Listar todos los personajes |
 | GET | `/capitulos` | Listar todos los capítulos |
-
----
-
-## 📦 Endpoints disponibles
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/frases` | Listar todas las frases |
-| GET | `/frases/:id` | Obtener una frase específica |
-| GET | `/frases/personaje/:id` | Frases por personaje |
-| GET | `/frases/capitulo/:id` | Frases por capítulo |
-| POST | `/frases` | Insertar nueva frase |
-| PUT | `/frases/:id` | Actualizar una frase |
-| DELETE | `/frases/:id` | Eliminar frase |
-| GET | `/personajes` | Listar todos los personajes |
-| GET | `/capitulos` | Listar todos los capítulos |
-| POST | `register` | Crear nuevo usuario |
+| POST | `/register` | Crear nuevo usuario |
 | POST | `/login` | Iniciar sesión |
 
 ---
