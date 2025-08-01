@@ -79,6 +79,7 @@ Todos los endpoints han sido testeados en **Postman** para garantizar su correct
 
 Pequeña interfaz que permite:
 - Visualizar frases
+- Next step: visualizar personajes, capítulos, filtrar...
 
 ---
 
