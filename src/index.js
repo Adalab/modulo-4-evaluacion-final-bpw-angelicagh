@@ -35,7 +35,7 @@ const generateToken = (payload) => {
     return token;
 }
 
-//verificar token (middleware)
+//AUTORIZACION: verificar token (middleware). next significa que si todo va bien, ejecute el codigo para devolver el api con las frases (server.get/frases)
 const authenticateToken = (req, res, next) => {
     const tokenHeader = req.headers['authorization'];
 
@@ -43,7 +43,9 @@ const authenticateToken = (req, res, next) => {
         res.status(400).json({error: "Token no proporcionado"})
     }
 
+    
     const verificarToken = jwt.verify(tokenHeader, process.env.JWT_SECRET_KEY); // verifica token con la clave secreta
+
     if(!verificarToken){
         res.status(400).json({error: "Token no válido"})
     }
@@ -84,6 +86,7 @@ server.post("/frases", async (req, res) => {
 })
     
 //listar todas las frases (con info del personaje y titulo del capitulo)
+//quiero que sea autenticado, por lo que meto una funcion en medio (middleware), si todo va bien, me devuelve las frases
 server.get("/frases", async (req, res) => {
 
     try {
@@ -393,7 +396,7 @@ server.post("/login", async (req, res) => {
         }
 
         //crear token
-        const userToken = { //estos son los datos que le voy a pasra a la funcion para generar el token
+        const userToken = { //estos son los datos que le voy a pasra a la funcion para generar el token (payload)
             username: emailBD.email, //accedo a la propiedad email de la BD
             id: emailBD.id //accedo a la propiedad id de la BD
         }
@@ -408,54 +411,22 @@ server.post("/login", async (req, res) => {
 })
 
 //AUTORIZACION
-//una vez loggeado (middleware) -------- REVISAR -----------
+//si quiero que el acceso a localhost:4000/frases sea autenticadole tengo que poner una funcion en medio (middleware) y, si todo va bien, me devuelve las frases
 server.get("/frases", authenticateToken, async (req, res) => {
 
     try {
         const connection = await getConnection();
 
-        const {email, password} = req.body;
-
-        if(!email || !password){
-            return res.status(400).json({
-            success: false, mensaje: "⚠️Faltan campos obligatorios",
-            })
-        }
-
-        let queryLogin = "SELECT * FROM users WHERE email = ?;"//verificar que usuario existe
-
-        const [results] = await connection.query(queryLogin, [email]);
-
+        const [results] = await connection.query ("SELECT frases.id AS id_frase, frases.texto AS frase, personajes.nombre, personajes.apellido, personajes.ocupacion, personajes.descripcion, capitulos.titulo AS capitulo FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id ORDER BY personajes.nombre ASC;");
+    
         connection.end();
 
-        //verificar si la contraseña coincide con el email en la BD
-        const emailBD = results[0];
-
-        const passwordCorrect = emailBD === null ? false : await
-
-        bcrypt.compare(password, emailBD.password);
-
-        if(!passwordCorrect) {
-            return res.status(401).json({error: "⚠️Email y/o password incorrectos"})
-        }
-
-        //crear token
-        const userToken = {
-            username: emailBD.email,
-            id: emailBD.id
-        }
-
-        const token = generateToken(userToken);     
-
-        res.status(200).json({token, email: emailBD.email})
-    }       
-    catch(error) { 
+        res.status(200).json({"results": results})    
+    }
+    catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
 })
-
-
-
 
 //SERVIDOR DE ESTATICOS
 const staticServerPath = "./src/web"; //ruta donde esta mi proyecto
