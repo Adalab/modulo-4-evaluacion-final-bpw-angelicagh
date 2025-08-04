@@ -43,7 +43,6 @@ Relaciones establecidas entre frases, personajes y capítulos.
 | POST | `/frases` | Insertar nueva frase |
 | GET | `/frases` | Listar todas las frases |
 | GET | `/frases/:id` | Obtener una frase específica |
-| GET | `/frases/personaje/:id` | Frases por personaje |
 | PUT | `/frases/:id` | Actualizar una frase |
 | DELETE | `/frases/:id` | Eliminar una frase |
 | GET | `/frases/personaje/:personaje_id` | Frases por personaje |
@@ -97,3 +96,12 @@ JWT_SECRET=...
 
 # Ejecutar servidor
 npm run dev
+
+# Probar los distintos endpoints tipo get
+`http://localhost:4000/frases`
+`http://localhost:4000//frases/:id`
+`http://localhost:4000/frases/personaje/:personaje_id`
+`http://localhost:4000//frases/capitulo/:capitulo_id`
+`http://localhost:4000/personajes`
+`http://localhost:4000/capitulos`
+

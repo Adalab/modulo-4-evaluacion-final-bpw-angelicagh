@@ -35,21 +35,23 @@ const generateToken = (payload) => {
     return token;
 }
 
-//AUTORIZACION: verificar token (middleware). next significa que si todo va bien, ejecute el codigo para devolver el api con las frases (server.get/frases)
+//AUTORIZACION: verificar token (middleware). next significa que si todo va bien, ejecute el codigo para devolver la api con las frases (server.get/frases)
+//OJO: DESDE POSTMAN DEVUELVE LOS 3 MENSAJES (TOKEN NO PROPORCIONADO, TOKEN NO VALIDO, Y EL LISTADO DE FRASES), PERO DESDE EL NAVEGADOR SOLO APARECE "TOKEN NO PROPORCIONADO")
 const authenticateToken = (req, res, next) => {
     const tokenHeader = req.headers['authorization'];
 
     if(!tokenHeader) {
-        res.status(400).json({error: "Token no proporcionado"})
+        return res.status(400).json({error: "Token no proporcionado"})
     }
 
-    
-    const verificarToken = jwt.verify(tokenHeader, process.env.JWT_SECRET_KEY); // verifica token con la clave secreta
+    try {
+        const verificarToken = jwt.verify(tokenHeader, process.env.JWT_SECRET_KEY); // verifica token con la clave secreta. cuando envias un token no valido la funcion verify() envia una excepcion automaticamente, por lo que no hace falta hacer un if(!verificarToken)
 
-    if(!verificarToken){
-        res.status(400).json({error: "Token no válido"})
-    }
-    next(); //si todo ha ido bien, entra en server.get/frases y devuelve el listado de frases
+        next(); //si todo ha ido bien, entra en server.get/frases y devuelve el listado de frases
+
+    }catch (error) {
+         return res.status(401).json({error: "Token no válido"})
+    }        
 }
 
 //ENDPOINTS
@@ -57,9 +59,16 @@ const authenticateToken = (req, res, next) => {
 //insertar nueva frase
 server.post("/frases", async (req, res) => {
     try {
+
         const connection = await getConnection();
 
         const {texto, marca_tiempo, descripcion, fk_personaje, fk_capitulo} = req.body;
+
+        if(!texto || !fk_capitulo || !fk_personaje){
+            res.status(400).json({
+            success: false, mensaje: "⚠️Faltan campos obligatorios",
+            })
+        }
 
         let queryInsert = "INSERT INTO frases (texto, marca_tiempo, descripcion, fk_personaje, fk_capitulo) VALUES (?, ?, ?, ?, ?);"
 
@@ -67,26 +76,20 @@ server.post("/frases", async (req, res) => {
     
         connection.end();
 
-        if(!texto || !fk_capitulo || !fk_personaje){
-            res.status(400).json({
-            success: false, mensaje: "⚠️Faltan campos obligatorios",
-            })
-        }
-        else{
+    
             res.status(200).json({
             success: true,
             mensaje: "✅La frase se ha insertado correctamente",
             id: results.insertId
             })
         }
-    }
+    
     catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
 })
     
 //listar todas las frases (con info del personaje y titulo del capitulo)
-//quiero que sea autenticado, por lo que meto una funcion en medio (middleware), si todo va bien, me devuelve las frases
 server.get("/frases", async (req, res) => {
 
     try {
@@ -101,7 +104,7 @@ server.get("/frases", async (req, res) => {
     catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
-})
+}) 
 
 //obtener una frase especifica
 server.get("/frases/:id", async (req, res) => {
@@ -110,7 +113,7 @@ server.get("/frases/:id", async (req, res) => {
 
         const id = req.params.id;
 
-        const [results] = await connection.query ("SELECT frases.id AS id_frase, frases.texto AS frase, personajes.nombre, personajes.apellido FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id WHERE frases.id = ?;", [id]);
+        const [results] = await connection.query ("SELECT frases.id AS id_frase, frases.texto AS frase, personajes.nombre, personajes.apellido, capitulos.titulo AS capitulo, capitulos.temporada, capitulos.numero_episodio, frases.marca_tiempo, frases.descripcion AS descripcion_frase FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id WHERE frases.id = ?;", [id]);
     
         connection.end();
 
@@ -143,18 +146,20 @@ server.put("/frases/:id", async (req, res) => {
 
         const {texto, marca_tiempo, descripcion, fk_personaje, fk_capitulo} = req.body;
 
+           if(!texto || !fk_capitulo || !fk_personaje){
+            return res.status(400).json({
+            success: false, mensaje: "⚠️Faltan campos obligatorios",
+            })
+        }
+
         let queryUpdate = "UPDATE frases SET texto = ?, marca_tiempo = ?, descripcion = ?, fk_personaje = ?, fk_capitulo = ? WHERE id = ?;"
 
         const [results] = await connection.query (queryUpdate, [texto, marca_tiempo, descripcion, fk_personaje, fk_capitulo, id]);
     
         connection.end();
 
-        if(!texto || !fk_capitulo || !fk_personaje){
-            res.status(400).json({
-            success: false, mensaje: "⚠️Faltan campos obligatorios",
-            })
-        }
-        else if(results.changedRows > 0){
+     
+        if(results.changedRows > 0){
             res.status(200).json({
             success: true,
             mensaje: "✅La frase se ha actualizado correctamente",
@@ -211,27 +216,28 @@ server.get("/frases/personaje/:personaje_id", async (req, res) => {
 
         const id = req.params.personaje_id;
 
+        if(isNaN(id)){
+            return res.status(400).json({
+            success: false, 
+            mensaje: "⚠️El ID no es válido. Debe ser un número",
+            })
+        }
+
         const [results] = await connection.query ("SELECT personajes.id AS id_personaje, personajes.nombre, personajes.apellido, frases.texto AS frase FROM frases INNER JOIN personajes ON frases.fk_personaje = personajes.id WHERE personajes.id = ?;", [id]);
+
+        if(results.length === 0) {
+            return res.status(404).json({
+            success: false, 
+            mensaje: "⚠️El ID no coincide con ningún personaje"})
+        }
     
         connection.end();
 
         //para que el nombre del personaje salga una sola vez y debajo todas sus frases una debajo de otra
         const { id_personaje, nombre, apellido } = results[0];//evita que salga 2 veces la info de Lisa, coge los datos solo 1 vez
         const frases = results.map(item => item.frase);//de los resultados se queda solo con las frases
-
-        if(isNaN(id)){
-            res.status(400).json({
-            success: false, 
-            mensaje: "⚠️El ID no es válido. Debe ser un número",
-            })
-        }
-        else if(results.length === 0) {
-        res.status(404).json({
-            success: false, 
-            mensaje: "⚠️El ID no coincide con ningún personaje"})
-        }
-        else{
-            res.status(200).json({"results": 
+        
+        res.status(200).json({"results": 
                 {
                     id_personaje,
                     nombre,
@@ -240,7 +246,7 @@ server.get("/frases/personaje/:personaje_id", async (req, res) => {
             }
         })
         }
-    }
+    
     catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
@@ -253,27 +259,28 @@ server.get("/frases/capitulo/:capitulo_id", async (req, res) => {
 
         const id = req.params.capitulo_id;
 
-        const [results] = await connection.query ("SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, frases.texto AS frase FROM frases INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id WHERE capitulos.id = ?;", [id]);
-    
-        connection.end();
-
-        //para que el nombre del personaje salga una sola vez y debajo todas sus frases una debajo de otra
-        const { id_capitulo, titulo_capitulo } = results[0];//evita que salga 2 veces la info de Lisa, coge los datos solo 1 vez
-        const frases = results.map(item => item.frase);//de los resultados se queda solo con las frases
-
-        if(isNaN(id)){
+         if(isNaN(id)){
             res.status(400).json({
             success: false, 
             mensaje: "⚠️El ID no es válido. Debe ser un número",
             })
         }
-        else if(results.length === 0) {
+
+        const [results] = await connection.query (`SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, CONCAT(frases.texto, ' (', personajes.nombre, ' ', personajes.apellido, ')') AS frase FROM frases INNER JOIN capitulos ON frases.fk_capitulo = capitulos.id INNER JOIN personajes ON frases.fk_personaje = personajes.id WHERE capitulos.id = ?;`, [id]);     
+
+        if(results.length === 0) {
         res.status(404).json({
             success: false, 
             mensaje: "⚠️El ID no coincide con ningún capítulo"})
         }
-        else{
-            res.status(200).json({"results": 
+
+        connection.end();
+
+        //para que el nombre del personaje salga una sola vez y debajo todas sus frases una debajo de otra
+        const { id_capitulo, titulo_capitulo } = results[0];//evita que salga 2 veces la info de Lisa, coge los datos solo 1 vez
+        const frases = results.map(item => item.frase);//de los resultados se queda solo con las frases
+       
+         res.status(200).json({"results": 
                 {
                     id_capitulo,
                     titulo_capitulo,
@@ -281,7 +288,7 @@ server.get("/frases/capitulo/:capitulo_id", async (req, res) => {
             }
         })
         }
-    }
+    
     catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
@@ -310,7 +317,7 @@ server.get("/capitulos", async (req, res) => {
     try {
         const connection = await getConnection();
 
-        const [results] = await connection.query ("SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision FROM capitulos ORDER BY capitulos.temporada ASC, capitulos.numero_episodio ASC;");
+        const [results] = await connection.query ("SELECT capitulos.id AS id_capitulo, capitulos.titulo AS titulo_capitulo, capitulos.sinopsis AS sinopsis, capitulos.temporada, capitulos.numero_episodio,  capitulos.fecha_emision FROM capitulos ORDER BY capitulos.temporada ASC, capitulos.fecha_emision ASC;");
     
         connection.end();
 
@@ -357,7 +364,6 @@ server.post("/register", async (req, res) => {
         })
     }       
     catch(error) {
-        console.error("🛑 Error en el servidor:", error);
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
 })
@@ -403,7 +409,10 @@ server.post("/login", async (req, res) => {
 
         const token = generateToken(userToken);     
 
-        res.status(200).json({token, email: emailBD.email})
+        res.status(200).json({
+            mensaje:"✅Email y password correctos",
+            token,
+            email: emailBD.email})
     }       
     catch(error) { 
         res.status(500).json({error: "❌ Error interno del servidor"})
@@ -411,8 +420,10 @@ server.post("/login", async (req, res) => {
 })
 
 //AUTORIZACION
-//si quiero que el acceso a localhost:4000/frases sea autenticadole tengo que poner una funcion en medio (middleware) y, si todo va bien, me devuelve las frases
-server.get("/frases", authenticateToken, async (req, res) => {
+//si quiero que el acceso a localhost:4000/frases sea autenticado le tengo que poner una funcion en medio (middleware) y, si todo va bien, me devuelve las frases
+//para comprobar que funciona en postman, hay que comentar el endpoint /frases (que es sin autenticar) y utilizar este (que es autenticado)
+
+/* server.get("/frases", authenticateToken, async (req, res) => {
 
     try {
         const connection = await getConnection();
@@ -426,7 +437,7 @@ server.get("/frases", authenticateToken, async (req, res) => {
     catch(error) {
         res.status(500).json({error: "❌ Error interno del servidor"})
     }
-})
+}) */
 
 //SERVIDOR DE ESTATICOS
 const staticServerPath = "./src/web"; //ruta donde esta mi proyecto

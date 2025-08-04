@@ -17,7 +17,10 @@ function App() {
       })
   }, []) 
 
+
+
   //de cada endpoint tengo que hacer un fetch distinto y preparar cómo quiero que se vea --> next step
+  //mejora rla organizacion de los componentes --> next step
 
  /*    useEffect(() => {
     fetch("https://modulo-4-evaluacion-final-bpw-angelicagh.onrender.com/frases/:id")
