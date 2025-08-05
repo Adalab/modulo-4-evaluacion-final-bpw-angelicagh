@@ -1,12 +1,24 @@
-# 🖼️ Frontend
+# 🖼️ Simpsons Quotes App
 
-La aplicación web realiza un fetch al endpoint /frases y muestra todas las frases disponibles.
+Una aplicación web hecha con React que muestra frases icónicas de personajes de Los Simpson usando tarjetas tipo post-it.
 
-📦 En el futuro, se incluirán:
+🚀 La app realiza un `fetch` al endpoint `/frases` para obtener el contenido desde una API propia desarrollada en el backend.
 
-- Listado de capítulos
+## 🧩 Tecnologías utilizadas
+- React
+- JavaScript
+- HTML y CSS
+- API REST desarrollada en Node.js / Express
 
-- Listado de personajes
+## 📦 Funcionalidades actuales
+- Listado de frases por personajes en tarjetas visuales.
+- Interfaz sencilla y divertida.
 
-- Filtros por personaje
+## 🎯 Next steps
+- Listado de capítulos.
+- Listado de personajes.
+- Barra de búsqueda de personajes.
+- Filtros por personaje, temporada y episodio.
+- Tarjetas más detalladas al hacer clic.
+
 
