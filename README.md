@@ -147,7 +147,7 @@ La API está desplegada en Render y puedes acceder a ella aquí y probar los dis
 
 Esta API permite realizar operaciones CRUD (crear, leer, actualizar, eliminar) sobre frases de Los Simpsons. Aquí te explicamos cómo interactuar con ella correctamente:
 
-# 1️⃣ Acceder a la API
+1️⃣ Acceder a la API
 
 Puedes consumirla desde:
 
@@ -160,35 +160,35 @@ Puedes consumirla desde:
 🔗 Accede aquí a la API desplegada en Render
 
 
-# 2️⃣ Peticiones tipo GET — Obtener datos
+2️⃣ Peticiones tipo GET — Obtener datos
 
 🛠️ Puedes usar el navegador o Postman para consultar frases, personajes, capítulos...
 
 📌 Importante: si estás buscando por ID, asegúrate de usar un ID válido o existente. De lo contrario, recibirás un mensaje de error indicando que el recurso no existe.
 
 
-# 3️⃣ Peticiones tipo POST — Insertar datos
+3️⃣ Peticiones tipo POST — Insertar datos
 
 🛠️ Se realizan exclusivamente desde Postman.
 
 📌 Importante: incluye en el cuerpo (body) de la petición todos los campos requeridos. Si omites alguno, la API responderá con un mensaje de error explicativo.
 
 
-# 4️⃣ Peticiones tipo PUT — Actualizar datos
+4️⃣ Peticiones tipo PUT — Actualizar datos
 
 🛠️ Se realizan exclusivamente desde Postman.
 
 📌 Importante: Debes incluir todos los campos del objeto en el body, incluso si solo deseas modificar uno. Si falta alguno, la validación fallará y se mostrará el error correspondiente.
 
 
-# 5️⃣ Peticiones tipo DELETE — Eliminar datos
+5️⃣ Peticiones tipo DELETE — Eliminar datos
 
 🛠️ Se realizan exclusivamente desde Postman.
 
 📌 Importante: Asegúrate de enviar un ID válido o existente. Si el recurso no existe, la API lo indicará con un mensaje de error.
 
 
-# 🛡️ Validaciones y mensajes de error
+🛡️ Validaciones y mensajes de error
 
 La API cuenta con múltiples validaciones que garantizan:
 
