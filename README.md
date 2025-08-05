@@ -27,6 +27,14 @@ Tablas creadas:
 
 Relaciones establecidas entre frases, personajes y capítulos.
 
+Dentro de VS Code, en la carpeta sql encontrarás:
+
+- simpsons_db.sql: esquema de la base de datos
+
+- CRUD.sql: consultas SQL para los distintos endpoints
+
+- diagrama.png: diagrama entidad-relación (DER)
+
 ---
 
 ## 📁 Estructura del proyecto
@@ -135,18 +143,6 @@ npm run dev
    npm run dev
 
 ```
-
-🗃️ Base de datos en MySQL Workbench
-
-Dentro de la carpeta sql encontrarás:
-
-- simpsons_db.sql: esquema de la base de datos
-
-- CRUD.sql: consultas SQL para los distintos endpoints
-
-- diagrama.png: diagrama entidad-relación (DER)
-
----
 
 ## 🌐 Visualizar API en Render
 
