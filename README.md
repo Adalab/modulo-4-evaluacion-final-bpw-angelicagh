@@ -106,7 +106,7 @@ JWT_SECRET=...
 npm run dev
 
 ```
-🧪 Probar endpoints (en local)
+🧪 Probar endpoints (en local): tipo GET en navegador o Postman y resto (POST, PUT, DELETE) solo en Postman
 
 ```bash
 
