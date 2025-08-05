@@ -84,6 +84,46 @@ Pequeña interfaz que permite:
 
 ## 📎 Cómo ejecutar
 
+# Clonar el repositorio
+git clone https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh
+
+# Acceder al proyecto
+cd modulo-4-evaluacion-final-bpw-angelicagh
+
+# Instalar dependencias
+npm install
+
+# Crear archivo .env con tus claves
+DB_HOST=...
+DB_USER=...
+DB_PASS=...
+JWT_SECRET=...
+
+# Ejecutar el servidor en desarrollo
+npm run dev
+
+
+---
+bash
+# Clonar el repositorio
+git clone https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh
+
+# Acceder al proyecto
+cd modulo-4-evaluacion-final-bpw-angelicagh
+
+# Instalar dependencias
+npm install
+
+# Crear archivo .env con tus claves
+DB_HOST=...
+DB_USER=...
+DB_PASS=...
+JWT_SECRET=...
+
+# Ejecutar el servidor en desarrollo
+npm run dev
+
+
 ```bash
 
 # Abrir Visual Studio Code
