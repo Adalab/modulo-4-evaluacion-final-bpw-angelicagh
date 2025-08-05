@@ -25,17 +25,22 @@ Una aplicación web hecha con React que muestra frases icónicas de personajes d
 
 # 🛠️ Cómo ejecutar la aplicación
 
-## 1️⃣ Clonar repo
+## 1️⃣ Abrir terminal
+
+## 2️⃣ Clonar repo
 ```bash
 git clone https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh
 ```
-
-## 2️⃣ Instalar las dependencias 
+## 3️⃣ Navegar hacia la ubicación de mi web
+```bash
+cd src/web
+```
+## 4️⃣ Instalar las dependencias 
 ```bash
 npm install
 ```
 
-## 3️⃣ Ejecutar la web
+## 5️⃣ Ejecutar la web
 ```bash
 npm run dev
 ```
