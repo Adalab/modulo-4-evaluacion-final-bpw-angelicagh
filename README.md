@@ -85,6 +85,13 @@ Pequeña interfaz que permite:
 ## 📎 Cómo ejecutar
 
 ```bash
+
+# Abrir Visual Studio Code
+
+# Clonar repo
+
+[Repositorio](https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh)
+
 # Instalar dependencias
 npm install
 
@@ -97,11 +104,103 @@ JWT_SECRET=...
 # Ejecutar servidor
 npm run dev
 
-# Probar los distintos endpoints tipo get
+# Probar los distintos endpoints tipo get (en local)
 `http://localhost:4000/frases`
 `http://localhost:4000//frases/:id`
 `http://localhost:4000/frases/personaje/:personaje_id`
 `http://localhost:4000//frases/capitulo/:capitulo_id`
 `http://localhost:4000/personajes`
 `http://localhost:4000/capitulos`
+
+# Visualizar aplicación frontend
+
+1. Abrir una nueva terminal
+
+2. Ubícate en la carpeta de la aplicación frontend
+    ```bash
+   cd src/web
+    
+3. Instalar dependencias
+     ```bash
+   npm install
+
+4. Ejecutar la aplicación 
+     ```bash
+   npm run dev
+
+# Consultar base de datos creada en MysQL Workbench
+Dentro de la carpeta sql:
+    - Archivo simpsons_db.sql: esquema de la base de datos
+    - Archivo CRUD.sql: consultas a la base de datos para obtener los distintos endpoints
+    - Archivo diagrama.png: diagrama entidad-relación (DER) de la base de datos
+
+```
+
+## 🌐 Visualizar API en Render
+
+La API está desplegada en Render y puedes acceder a ella aquí y probar los distintos endpoints mencionados previamente: 
+🔗 [API de Frases en Render](https://modulo-4-evaluacion-final-bpw-angelicagh.onrender.com/frases)
+
+---
+
+## 🤝 Cómo consumir la API
+
+Esta API permite realizar operaciones CRUD (crear, leer, actualizar, eliminar) sobre frases de Los Simpsons. Aquí te explicamos cómo interactuar con ella correctamente:
+
+# 1️⃣ Acceder a la API
+
+Puedes consumirla desde:
+
+- El navegador (solo para endpoints públicos tipo GET)
+
+- Herramientas como Postman o Insomnia
+
+- El frontend en desarrollo
+
+🔗 Accede aquí a la API desplegada en Render
+
+
+# 2️⃣ Peticiones tipo GET — Obtener datos
+
+🛠️ Puedes usar el navegador o Postman para consultar frases, personajes, capítulos...
+
+📌 Importante: si estás buscando por ID, asegúrate de usar un ID válido o existente. De lo contrario, recibirás un mensaje de error indicando que el recurso no existe.
+
+
+# 3️⃣ Peticiones tipo POST — Insertar datos
+
+🛠️ Se realizan exclusivamente desde Postman.
+
+📌 Importante: incluye en el cuerpo (body) de la petición todos los campos requeridos. Si omites alguno, la API responderá con un mensaje de error explicativo.
+
+
+# 4️⃣ Peticiones tipo PUT — Actualizar datos
+
+🛠️ Se realizan exclusivamente desde Postman.
+
+📌 Importante: Debes incluir todos los campos del objeto en el body, incluso si solo deseas modificar uno. Si falta alguno, la validación fallará y se mostrará el error correspondiente.
+
+
+# 5️⃣ Peticiones tipo DELETE — Eliminar datos
+
+🛠️ Se realizan exclusivamente desde Postman.
+
+📌 Importante: Asegúrate de enviar un ID válido o existente. Si el recurso no existe, la API lo indicará con un mensaje de error.
+
+
+# 🛡️ Validaciones y mensajes de error
+
+La API cuenta con múltiples validaciones que garantizan:
+
+- Claridad en errores: mensajes específicos sobre qué campo falló o qué recurso no existe.
+
+- Mejora la experiencia de usuario: sabrás si la operación fue exitosa o por qué no se pudo completar.
+
+
+
+
+
+
+
+
 
