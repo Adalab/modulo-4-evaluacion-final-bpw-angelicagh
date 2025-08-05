@@ -84,53 +84,14 @@ Pequeña interfaz que permite:
 
 ## 📎 Cómo ejecutar
 
-# Clonar el repositorio
-git clone https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh
-
-# Acceder al proyecto
-cd modulo-4-evaluacion-final-bpw-angelicagh
-
-# Instalar dependencias
-npm install
-
-# Crear archivo .env con tus claves
-DB_HOST=...
-DB_USER=...
-DB_PASS=...
-JWT_SECRET=...
-
-# Ejecutar el servidor en desarrollo
-npm run dev
-
-
----
-bash
-# Clonar el repositorio
-git clone https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh
-
-# Acceder al proyecto
-cd modulo-4-evaluacion-final-bpw-angelicagh
-
-# Instalar dependencias
-npm install
-
-# Crear archivo .env con tus claves
-DB_HOST=...
-DB_USER=...
-DB_PASS=...
-JWT_SECRET=...
-
-# Ejecutar el servidor en desarrollo
-npm run dev
-
+🔧 Backend
 
 ```bash
 
 # Abrir Visual Studio Code
 
 # Clonar repo
-
-[Repositorio](https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh)
+git clone (https://github.com/Adalab/modulo-4-evaluacion-final-bpw-angelicagh)
 
 # Instalar dependencias
 npm install
@@ -144,7 +105,11 @@ JWT_SECRET=...
 # Ejecutar servidor
 npm run dev
 
-# Probar los distintos endpoints tipo get (en local)
+```
+🧪 Probar endpoints (en local)
+
+```bash
+
 `http://localhost:4000/frases`
 `http://localhost:4000//frases/:id`
 `http://localhost:4000/frases/personaje/:personaje_id`
@@ -152,29 +117,36 @@ npm run dev
 `http://localhost:4000/personajes`
 `http://localhost:4000/capitulos`
 
-# Visualizar aplicación frontend
+```
 
-1. Abrir una nueva terminal
+🎨 Frontend
 
-2. Ubícate en la carpeta de la aplicación frontend
-    ```bash
+```bash
+
+# Abrir una nueva terminal
+
+# Ubícate en la carpeta de la aplicación frontend
    cd src/web
     
-3. Instalar dependencias
-     ```bash
+# Instalar dependencias
    npm install
 
-4. Ejecutar la aplicación 
-     ```bash
+# Ejecutar la aplicación 
    npm run dev
 
-# Consultar base de datos creada en MysQL Workbench
-Dentro de la carpeta sql:
-    - Archivo simpsons_db.sql: esquema de la base de datos
-    - Archivo CRUD.sql: consultas a la base de datos para obtener los distintos endpoints
-    - Archivo diagrama.png: diagrama entidad-relación (DER) de la base de datos
-
 ```
+
+🗃️ Base de datos en MySQL Workbench
+
+Dentro de la carpeta sql encontrarás:
+
+- simpsons_db.sql: esquema de la base de datos
+
+- CRUD.sql: consultas SQL para los distintos endpoints
+
+- diagrama.png: diagrama entidad-relación (DER)
+
+---
 
 ## 🌐 Visualizar API en Render
 
