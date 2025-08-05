@@ -19,13 +19,13 @@ Bienvenida/o al proyecto **Simpsons Quotes API**, una aplicación backend que pe
 
 ## 📚 Base de datos
 
-Tablas creadas:
-- `personajes`
-- `capitulos`
-- `frases`
-- `users`
+- Tablas creadas:
+   - `personajes`
+   - `capitulos`
+   - `frases`
+   - `users`
 
-Relaciones establecidas entre frases, personajes y capítulos.
+- Relaciones establecidas entre frases, personajes y capítulos.
 
 Dentro de VS Code, en la carpeta sql encontrarás:
 
@@ -165,7 +165,7 @@ Puedes consumirla desde:
 
 - El frontend en desarrollo
 
-🔗 Accede aquí a la API desplegada en Render
+🔗 [Accede aquí a la API desplegada en Render](https://modulo-4-evaluacion-final-bpw-angelicagh.onrender.com/frases)
 
 
 2️⃣ Peticiones tipo GET — Obtener datos
